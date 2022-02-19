@@ -12,8 +12,9 @@ import (
 )
 
 var convertCmd = &cobra.Command{
-	Use:  "convert",
-	Args: cobra.ExactArgs(2),
+	Use:   "convert input_path output_path",
+	Short: "Сonvert YAML to JSON and vice versa",
+	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return convertFile(args[0], args[1])
 	},

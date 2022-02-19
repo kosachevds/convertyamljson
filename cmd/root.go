@@ -7,8 +7,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "convertyamljson",
-	Short: "Сonvert YAML to JSON and vice versa",
+	Use: "convertyamljson",
 }
 
 func Execute() {
