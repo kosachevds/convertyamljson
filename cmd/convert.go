@@ -1,9 +1,11 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 )
 
 var convertCmd = &cobra.Command{
@@ -13,6 +15,20 @@ var convertCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(convertCmd)
+}
+
+func convertYAMLToJSON(data []byte) ([]byte, error) {
+	dataMap := make(map[string]interface{})
+	err := yaml.Unmarshal(data, &dataMap)
+	if err != nil {
+		return nil, fmt.Errorf("YAML parsing error: %v", err)
+	}
+	dataMap = convertNestedMapKeysToString(dataMap)
+	result, err := json.Marshal(dataMap)
+	if err != nil {
+		return nil, fmt.Errorf("JSON marshal error: %v", err)
+	}
+	return result, nil
 }
 
 func convertNestedMapKeysToString(data map[string]interface{}) map[string]interface{} {
