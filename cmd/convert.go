@@ -90,6 +90,7 @@ func convertFile(input, output string) error {
 	if err != nil {
 		return fmt.Errorf("creating file error: %v", err)
 	}
+	defer file.Close()
 	_, err = file.Write(result)
 	if err != nil {
 		return fmt.Errorf("file writing error: %v", err)
