@@ -10,7 +10,8 @@ import (
 var defaultCmd = convertCmd
 
 var rootCmd = &cobra.Command{
-	Use: "convertyamljson",
+	Use:          "convertyamljson",
+	SilenceUsage: true,
 	CompletionOptions: cobra.CompletionOptions{
 		DisableDefaultCmd: true,
 	},
