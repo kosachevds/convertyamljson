@@ -3,6 +3,7 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -96,4 +97,39 @@ func convertFile(input, output string) error {
 		return fmt.Errorf("file writing error: %v", err)
 	}
 	return nil
+}
+
+func convertDir(input, output string) error {
+	return filepath.WalkDir(input, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if d.IsDir() {
+			return nil
+		}
+
+		resultPath := filepath.Join(output, path[len(input):])
+		ext := strings.ToLower(filepath.Ext(path))
+		lenWithoutExt := len(resultPath) - len(ext)
+		switch ext {
+		case ".yml":
+			resultPath = resultPath[:lenWithoutExt] + ".json"
+		case ".json":
+			resultPath = resultPath[:lenWithoutExt] + ".yml"
+		default:
+			fmt.Printf("Cannot convert %s file\n", path)
+			return nil
+		}
+
+		resultDir := filepath.Dir(resultPath)
+		err = os.MkdirAll(resultDir, 0777)
+		if err != nil {
+			return fmt.Errorf("cannot create %s: %v", resultDir, err)
+		}
+		err = convertFile(path, resultPath)
+		if err != nil {
+			return fmt.Errorf("cannot convert %s: %v", path, err)
+		}
+		return nil
+	})
 }
