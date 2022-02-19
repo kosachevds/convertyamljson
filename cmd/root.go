@@ -8,6 +8,9 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use: "convertyamljson",
+	CompletionOptions: cobra.CompletionOptions{
+		DisableDefaultCmd: true,
+	},
 }
 
 func Execute() {
