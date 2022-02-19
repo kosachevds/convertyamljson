@@ -13,6 +13,9 @@ import (
 var convertCmd = &cobra.Command{
 	Use:  "convert",
 	Args: cobra.ExactArgs(2),
+	RunE: func(cmd *cobra.Command, args []string) error {
+		return convertFile(args[0], args[1])
+	},
 }
 
 func init() {
