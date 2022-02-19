@@ -36,6 +36,19 @@ func convertYAMLToJSON(data []byte) ([]byte, error) {
 	return result, nil
 }
 
+func convertJSONToYAML(data []byte) ([]byte, error) {
+	dataMap := make(map[string]interface{})
+	err := json.Unmarshal(data, &dataMap)
+	if err != nil {
+		return nil, fmt.Errorf("JSON parsing error: %v", err)
+	}
+	result, err := yaml.Marshal(dataMap)
+	if err != nil {
+		return nil, fmt.Errorf("YAML marshal error: %v", err)
+	}
+	return result, nil
+}
+
 func convertNestedMapKeysToString(data map[string]interface{}) map[string]interface{} {
 	for key, val := range data {
 		nestedMap, ok := val.(map[interface{}]interface{})
@@ -61,11 +74,13 @@ func convertFile(input, output string) error {
 	var result []byte
 	if strings.HasSuffix(lowerInput, ".yml") {
 		result, err = convertYAMLToJSON(inputBytes)
-		if err != nil {
-			return err
-		}
+	} else if strings.HasSuffix(lowerInput, ".json") {
+		result, err = convertJSONToYAML(inputBytes)
 	} else {
-		return fmt.Errorf("input file must have extension '.yml'")
+		return fmt.Errorf("input file must have extension '.yml' or '.json'")
+	}
+	if err != nil {
+		return err
 	}
 
 	file, err := os.Create(output)
