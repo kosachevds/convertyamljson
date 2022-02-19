@@ -3,6 +3,8 @@ package cmd
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
@@ -44,4 +46,32 @@ func convertNestedMapKeysToString(data map[string]interface{}) map[string]interf
 		data[key] = convertNestedMapKeysToString(stringKeyMap)
 	}
 	return data
+}
+
+func convertFile(input, output string) error {
+	inputBytes, err := os.ReadFile(input)
+	if err != nil {
+		return fmt.Errorf("file read error: %v", err)
+	}
+
+	lowerInput := strings.ToLower(input)
+	var result []byte
+	if strings.HasSuffix(lowerInput, ".yml") {
+		result, err = convertYAMLToJSON(inputBytes)
+		if err != nil {
+			return err
+		}
+	} else {
+		return fmt.Errorf("input file must have extension '.yml'")
+	}
+
+	file, err := os.Create(output)
+	if err != nil {
+		return fmt.Errorf("creating file error: %v", err)
+	}
+	_, err = file.Write(result)
+	if err != nil {
+		return fmt.Errorf("file writing error: %v", err)
+	}
+	return nil
 }
