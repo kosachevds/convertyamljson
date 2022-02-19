@@ -17,11 +17,19 @@ var convertCmd = &cobra.Command{
 	Short: "Сonvert YAML to JSON and vice versa",
 	Args:  cobra.ExactArgs(2),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		dir, err := cmd.Flags().GetBool("dir")
+		if err != nil {
+			return err
+		}
+		if dir {
+			return convertDir(args[0], args[1])
+		}
 		return convertFile(args[0], args[1])
 	},
 }
 
 func init() {
+	convertCmd.Flags().BoolP("dir", "d", false, "Recursively convert files in dir")
 	rootCmd.AddCommand(convertCmd)
 }
 
