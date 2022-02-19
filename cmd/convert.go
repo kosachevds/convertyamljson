@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -70,13 +71,14 @@ func convertFile(input, output string) error {
 		return fmt.Errorf("file read error: %v", err)
 	}
 
-	lowerInput := strings.ToLower(input)
 	var result []byte
-	if strings.HasSuffix(lowerInput, ".yml") {
+	ext := strings.ToLower(filepath.Ext(input))
+	switch ext {
+	case ".yml":
 		result, err = convertYAMLToJSON(inputBytes)
-	} else if strings.HasSuffix(lowerInput, ".json") {
+	case ".json":
 		result, err = convertJSONToYAML(inputBytes)
-	} else {
+	default:
 		return fmt.Errorf("input file must have extension '.yml' or '.json'")
 	}
 	if err != nil {
